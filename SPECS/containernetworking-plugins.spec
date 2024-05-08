@@ -5,7 +5,7 @@
 
 %if ! 0%{?gobuild:1}
 %define gobuild(o:) \
-go build -buildmode pie -compiler gc -tags="rpm_crashtraceback no_openssl ${BUILDTAGS:-}" -ldflags "${LDFLAGS:-} -linkmode=external -compressdwarf=false -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n') -extldflags '%__global_ldflags'" -a -v %{?**};
+go build -buildmode pie -compiler gc -tags="rpm_crashtraceback ${BUILDTAGS:-}" -ldflags "${LDFLAGS:-} -linkmode=external -compressdwarf=false -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n') -extldflags '%__global_ldflags'" -a -v %{?**};
 %define gotest(o:) go test
 %endif
 
@@ -19,20 +19,20 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback no_openssl ${BUIL
 
 Epoch: 1
 Name: containernetworking-plugins
-Version: 1.2.0
-Release: 1%{?dist}
+Version: 1.3.0
+Release: 8%{?dist}
 Summary: CNI network plugins
 License: ASL 2.0
 URL: https://%{provider_prefix}
 Source0: https://%{provider_prefix}/archive/v%{version}.tar.gz
 # https://fedoraproject.org/wiki/PackagingDrafts/Go#Go_Language_Architectures
 ExclusiveArch: %{go_arches}
-BuildRequires: golang >= 1.17.7
+BuildRequires: golang >= 1.20.6
 BuildRequires: git
 BuildRequires: /usr/bin/go-md2man
 BuildRequires: systemd-devel
 Requires: systemd
-Provides: containernetworking-cni = %{version}-%{release}
+Provides: containernetworking-cni = %{epoch}:%{version}-%{release}
 
 %description
 The CNI (Container Network Interface) project consists of a specification
@@ -125,9 +125,46 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_unitdir}/cni-dhcp.socket
 
 %changelog
-* Tue Jan 17 2023 Jindrich Novy <jnovy@redhat.com> - 1:1.2.0-1
+* Tue Jan 23 2024 Jindrich Novy <jnovy@redhat.com> - 1:1.3.0-8
+- Make the module buildable again
+- Resolves: RHEL-16299
+
+* Sat Dec 02 2023 Lokesh Mandvekar <lsm5@redhat.com> - 1:1.3.0-7
+- rebuild with golang 1.20.10 for CVE-2023-39321
+- Related: Jira:RHEL-4514
+
+* Sat Dec 02 2023 Lokesh Mandvekar <lsm5@redhat.com> - 1:1.3.0-6
+- rebuild with golang 1.20.10 or higher
+- Related: Jira:RHEL-4514
+
+* Fri Dec 01 2023 Lokesh Mandvekar <lsm5@redhat.com> - 1:1.3.0-5
+- rebuild with golang 1.20.10
+- Related: Jira:RHEL-4514
+
+* Fri Aug 11 2023 Jindrich Novy <jnovy@redhat.com> - 1:1.3.0-4
+- add Epoch in Provides
+- Related: #2176055
+
+* Sat Jul 08 2023 Jindrich Novy <jnovy@redhat.com> - 1:1.3.0-3
+- remove no_openssl for FIPS compliance
+- Related: #2176055
+
+* Thu Jun 15 2023 Jindrich Novy <jnovy@redhat.com> - 1:1.3.0-2
+- rebuild for following CVEs:
+CVE-2022-41724 CVE-2022-41725 CVE-2023-24538 CVE-2023-24534 CVE-2023-24536 CVE-2022-41723 CVE-2023-24539 CVE-2023-24540 CVE-2023-29400
+- Resolves: #2179944
+- Resolves: #2187342
+- Resolves: #2187360
+- Resolves: #2203693
+- Resolves: #2207506
+
+* Fri May 12 2023 Jindrich Novy <jnovy@redhat.com> - 1:1.3.0-1
+- update to https://github.com/containernetworking/plugins/releases/tag/v1.3.0
+- Related: #2176055
+
+* Thu Mar 09 2023 Jindrich Novy <jnovy@redhat.com> - 1:1.2.0-1
 - update to https://github.com/containernetworking/plugins/releases/tag/v1.2.0
-- Related: #2123641
+- Related: #2176055
 
 * Wed May 11 2022 Jindrich Novy <jnovy@redhat.com> - 1:1.1.1-3
 - BuildRequires: /usr/bin/go-md2man
