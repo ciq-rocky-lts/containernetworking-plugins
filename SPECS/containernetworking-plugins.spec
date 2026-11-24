@@ -17,7 +17,7 @@ go build -buildmode pie -compiler gc -tags="rpm_crashtraceback no_openssl ${BUIL
 Epoch: 1
 Name: containernetworking-plugins
 Version: 1.2.0
-Release: 2%{?dist}
+Release: 2.1%{?dist}
 Summary: CNI network plugins
 License: ASL 2.0
 URL: https://%{provider_prefix}
@@ -122,6 +122,9 @@ export GOPATH=%{buildroot}/%{gopath}:$(pwd)/vendor:%{gopath}
 %{_unitdir}/cni-dhcp.socket
 
 %changelog
+* Wed Nov 18 2026 Jason Rodriguez <jrodriguez@ciq.com> - 1:1.2.0-2.1
+- Rebuild against golang 1.25.14 (toolchain CVE; no source change)
+
 * Thu Dec 12 2024 <ppatel@ciq.com> - 1:1.2.0-2
 - Rebuild for CVE-2024-34156
 
